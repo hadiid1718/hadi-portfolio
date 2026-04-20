@@ -171,9 +171,7 @@ export const Navigation = () => {
                 <Link to="/register" className="block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-center transition-colors duration-200 font-medium" onClick={() => setIsMenuOpen(false)}>
                   Sign Up
                 </Link>
-                <Link to="/admin-login" className="block px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-center transition-colors duration-200 font-medium" onClick={() => setIsMenuOpen(false)}>
-                  Admin Login
-                </Link>
+             
               </>
             )}
           </div>
