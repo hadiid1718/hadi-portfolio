@@ -1,5 +1,5 @@
 // API Service using Fetch API
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://hadi-portfolio-r47a.onrender.com/api';
 
 // Helper function for API calls
 const apiCall = async (endpoint, method = 'GET', body = null, token = null) => {
