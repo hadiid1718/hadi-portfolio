@@ -1,19 +1,10 @@
 
-import adminPanel from "../../assets/admin_dashboard.png"
-import shades from "../../assets/shades.png"
-import zentry from "../../assets/zentry.png"
-import Uslepp from "../../assets/u-slepp.png"
-import statment from "../../assets/statement.png"
-import vs from "../../assets/vs.png"
-
-
 export const navLinks = [
   { name: 'Home', path: '/' },
   { name: 'Services', path: '/services' },
   { name: 'Work', path: '/work' },
   { name: 'Contact', path: '/contact' },
   { name: 'Resume', path: '/resume' },
-  {name: 'Courses', path:'/courses'}
 ];
 
 export const authRoutes = [
