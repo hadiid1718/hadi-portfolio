@@ -1,5 +1,5 @@
 // API Service using Fetch API
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // Helper function for API calls
 const apiCall = async (endpoint, method = 'GET', body = null, token = null) => {
