@@ -75,7 +75,7 @@ export const Navigation = () => {
 
   // Add Courses link and Dashboard link only if user is logged in
   const navLinks = isLoggedIn 
-    ? [...baseNavLinks, { name: 'Courses', path: '/courses' }]
+    ? [...baseNavLinks, { path: '/courses' }]
     : baseNavLinks;
 
   const handleLogout = () => {
