@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Link } from '../common/Link';
 import profileImage from "../../assets/profile.jpg"
-import MyCv from "../../assets/Hadeed_CV.pdf"
+import MyCv from "../../assets/Hadeed_Ul_Hassan"
 import { motion } from "framer-motion";
 export const Hero = () => {
   const [imageRotation, setImageRotation] = useState({ x: 0, y: 0 });
@@ -26,7 +26,7 @@ export const Hero = () => {
     // Download the CV
     const downloadLink = document.createElement('a');
     downloadLink.href = cvUrl;
-    downloadLink.download = 'Hadeed_CV.pdf';
+    downloadLink.download = 'Hadeed_Ul_Hassan.pdf';
     document.body.appendChild(downloadLink);
     downloadLink.click();
     document.body.removeChild(downloadLink);
