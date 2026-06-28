@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Link } from '../common/Link';
 import profileImage from "../../assets/profile.jpg"
-import MyCv from "../../assets/Hadeed_Ul_Hassan"
+import MyCv from "../../assets/Hadeed_Ul_Hassan.pdf"
 import { motion } from "framer-motion";
 export const Hero = () => {
   const [imageRotation, setImageRotation] = useState({ x: 0, y: 0 });
