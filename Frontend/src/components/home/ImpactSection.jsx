@@ -5,9 +5,9 @@ import { motion } from "framer-motion";
 
 
 const icons = {
-  'File converter&compressor': File,
-  'Upwork Automation tool': Code,
-  'Zentry Gaming': Gamepad
+  'U Sleep': Code,
+  'Acquisitions - Secure REST API': Code,
+  'README Generator SaaS': File
 };
 
 export const ImpactSection = () => {

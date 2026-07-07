@@ -14,23 +14,26 @@ export const authRoutes = [
 
 export const impactItems = [
   {
-    title: 'File converter&compressor',
-    description: 'Designed File converter, Develope APIs and integrate them. Developed analytics with chart and graph with real time data processing..'
+    title: "U Sleep",
+    description:
+      "Validated the pipeline end-to-end across 10,000 users, fetching live jobs, automatically generating proposals for all listings, and sending them to clients on the selected platform. Implemented Stripe subscription billing and centralized Express error-handling middleware, mapping Mongoose errors to consistent JSON responses with structured Winston logging and error reporting."
   },
   {
-    title: 'Upwork Automation tool',
-    description: 'Build User Dashboard and Admin panel with real time data, steps that will use to build a job fetching structure, Demo Scheduling'
+    title: "Acquisitions - Secure REST API",
+    description:
+      "Architected four role-based REST API endpoints with JWT authentication and access control, rate-limited to 150 requests per minute, returning consistent 4xx/5xx JSON responses. Implemented request validation with Zod, bot protection with Arcjet, structured logging with Winston, and containerized the service using Docker."
   },
   {
-    title: 'Zentry Gaming',
-    description: 'Build this animated website recently, a simple, easy design bbut totaly different design.'
+    title: "README Generator SaaS",
+    description:
+      "Implemented authentication, plan-based template access, and a live Markdown preview for real-time editing. Integrated Stripe-powered plan upgrades to support premium template tiers. Implemented bot protection with Arcjet, structured logging with Winston, a CI/CD pipeline using GitHub Actions, and containerized the service using Docker."
   }
 ];
 
 export const stats = [
-  { number: '2+', label: 'Years of Experience' },
-  { number: '5+', label: 'Projects Completed' },
-  { number: '6+', label: 'Technologies Mastered' },
+  { number: '3+', label: 'Years of Experience' },
+  { number: '10+', label: 'Projects Completed' },
+  { number: '14+', label: 'Technologies Mastered' },
   { number: '200+', label: 'Code Commits' }
 ];
 
