@@ -23,7 +23,7 @@ export const Navigation = () => {
   const checkAuthStatus = () => {
     const userToken = tokenStorage.getUserToken();
     const adminToken = tokenStorage.getAdminToken();
-    
+
     if (userToken) {
       setIsLoggedIn(true);
       setUserType('user');
@@ -51,7 +51,7 @@ export const Navigation = () => {
     const interval = setInterval(checkAuthStatus, 1000);
 
     window.addEventListener('storage', handleStorageChange);
-    
+
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       clearInterval(interval);
@@ -74,7 +74,7 @@ export const Navigation = () => {
   };
 
   // Add Courses link and Dashboard link only if user is logged in
-  const navLinks = isLoggedIn 
+  const navLinks = isLoggedIn
     ? [...baseNavLinks, { path: '/courses' }]
     : baseNavLinks;
 
@@ -124,16 +124,7 @@ export const Navigation = () => {
                   Logout
                 </button>
               </>
-            ) : (
-              <>
-                <Link to="/login" className="px-4 py-2 text-slate-300 hover:text-blue-400 transition-colors duration-200 font-medium">
-                  Login
-                </Link>
-                <Link to="/register" className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 font-medium">
-                  Sign Up
-                </Link>
-              </>
-            )}
+            ) : (<></>)}
           </div>
 
           <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden text-white p-2">
@@ -163,17 +154,7 @@ export const Navigation = () => {
                   Logout
                 </button>
               </>
-            ) : (
-              <>
-                <Link to="/login" className="block px-4 py-2 text-slate-300 hover:text-blue-400 transition-colors duration-200 font-medium" onClick={() => setIsMenuOpen(false)}>
-                  Login
-                </Link>
-                <Link to="/register" className="block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-center transition-colors duration-200 font-medium" onClick={() => setIsMenuOpen(false)}>
-                  Sign Up
-                </Link>
-             
-              </>
-            )}
+            ) : ( <></>)}
           </div>
         )}
       </motion.div>

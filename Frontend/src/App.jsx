@@ -39,13 +39,7 @@ export default function App() {
         <Route path="/work"><WorkPage /></Route>
         <Route path="/contact"><ContactPage /></Route>
         <Route path="/resume"><ResumePage /></Route>
-        <Route path="/courses"><CoursePage /></Route>
-        <Route path="/phishing"><Phishing /></Route>
-        <Route path="/andrat"><AndroidHacking /></Route>
-        <Route path="/osint"><Osint /></Route>
-        <Route path="/login"><UserLogin /></Route>
-        <Route path="/register"><UserRegister /></Route>
-        <Route path="/admin-login"><AdminLogin /></Route>
+        <Route path="/haira.347-admin-login"><AdminLogin /></Route>
         <Route path="/user-dashboard"><UserDashboard /></Route>
         <Route path="/admin-dashboard"><AdminDashboard /></Route>
       </Router>

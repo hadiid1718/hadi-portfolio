@@ -8,8 +8,6 @@ export const navLinks = [
 ];
 
 export const authRoutes = [
-  { name: 'User Login', path: '/login' },
-  { name: 'User Register', path: '/register' },
   { name: 'Admin Login', path: '/admin-login' }
 ];
 
