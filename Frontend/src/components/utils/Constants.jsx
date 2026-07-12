@@ -40,4 +40,31 @@ export const stats = [
 
 
 
+export const experience = [
+  {
+    id:1,
+    date: "01/07/2025 - 01/09/2025",
+    title: "Junior Backend Intern",
+    company: "Jaynext IT, Lahore",
+    description: 'Engineered	authentication	systems	and	centralized	error	handling	middleware	for	backend	services	using	Node.js	and	Express.js.Implemented	bot	and	abuse	detection	using	Arcjet	and	automated	background	workflows	with	Upstash,	improving	backend	performance	and reliability.'
+  },
+  {
+    id:2,
+    date: "13/10/2025 - 16/01/2026",
+    title: "Junior Backend Developer",
+    company: "Softly, Lahore",
+    description: 'Developed	and	maintained	backend	features	and	REST	API	endpoints	using	Node.js	and	Express.js	within	a	live	production	codebase.Integrated	REST	APIs	with	frontend	components,	ensuring	reliable	data	flow	and	consistent	request/response	handling	across	the	full	stack.Built	and	maintained	Express.js	route	handlers	and	middleware,	strengthening	code	structure,	error	handling,	and	overall	backend	reliability.'
+  },
+  {
+    id:3,
+    date: "05/03/2025 - 01/05/2025",
+    title: " Full Stack E-commerce website",
+    company: "Freelancing Project, Islamabad",
+    description: 'Delivered	a	full	stack	e	commerce	platform	end	to	end,	covering	product	catalog,	shopping	cart,	and	checkout	flows	for	a	retail	client.Managed	the	engagement	independently	as	a	freelance	contractor,	from	requirements	gathering	through	deployment.'
+  },
+]
+
+
+
+
 
