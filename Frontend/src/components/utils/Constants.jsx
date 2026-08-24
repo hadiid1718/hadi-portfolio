@@ -14,19 +14,21 @@ export const authRoutes = [
 
 export const impactItems = [
   {
-    title: "U Sleep",
+    title: "U Sleep — Job Automation Platform",
     description:
-      "Validated the pipeline end-to-end across 10,000 users, fetching live jobs, automatically generating proposals for all listings, and sending them to clients on the selected platform. Implemented Stripe subscription billing and centralized Express error-handling middleware, mapping Mongoose errors to consistent JSON responses with structured Winston logging and error reporting."
+      "Built and validated an automated job-search and proposal pipeline across 10,000 users. The platform fetches live job listings, generates proposals automatically, and sends them to clients. Integrated Stripe subscription billing and centralized Express error handling with structured Winston logging and error reporting."
   },
+
   {
-    title: "Acquisitions - Secure REST API",
+    title: "Acquisitions — Secure REST API",
     description:
-      "Architected four role-based REST API endpoints with JWT authentication and access control, rate-limited to 150 requests per minute, returning consistent 4xx/5xx JSON responses. Implemented request validation with Zod, bot protection with Arcjet, structured logging with Winston, and containerized the service using Docker."
+      "Designed and implemented a secure role-based REST API with JWT authentication, access control, Zod request validation, and rate limiting. Added Arcjet bot protection, Winston structured logging, consistent API error responses, and Docker-based containerization for reliable deployment."
   },
+
   {
     title: "README Generator SaaS",
     description:
-      "Implemented authentication, plan-based template access, and a live Markdown preview for real-time editing. Integrated Stripe-powered plan upgrades to support premium template tiers. Implemented bot protection with Arcjet, structured logging with Winston, a CI/CD pipeline using GitHub Actions, and containerized the service using Docker."
+      "Built a SaaS platform for generating and editing project documentation with authentication, plan-based template access, and live Markdown preview. Integrated Stripe subscriptions for premium features, Arcjet bot protection, Winston logging, GitHub Actions CI/CD, and Docker containerization."
   }
 ];
 
