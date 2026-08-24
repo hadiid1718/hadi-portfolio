@@ -105,7 +105,6 @@ exports.adminLogin = async (req, res) => {
 exports.getAdminDashboard = async (req, res) => {
   try {
     const Admin = require('../model/Admin');
-    const User = require('../model/User');
     const Contact = require('../model/Contact');
     const Course = require('../model/Course');
 
@@ -126,7 +125,6 @@ exports.getAdminDashboard = async (req, res) => {
     }
 
     // Get statistics
-    const totalUsers = await User.countDocuments();
     const totalContacts = await Contact.countDocuments();
     const totalCourses = await Course.countDocuments();
     const newContacts = await Contact.countDocuments({ status: 'new' });
@@ -143,7 +141,6 @@ exports.getAdminDashboard = async (req, res) => {
           createdAt: admin.createdAt
         },
         stats: {
-          totalUsers,
           totalContacts,
           totalCourses,
           newContacts
@@ -209,46 +206,6 @@ exports.createAdmin = async (req, res) => {
     });
   } catch (error) {
     console.error('Create admin error:', error);
-    res.status(500).json({ message: 'Server error', error: error.message });
-  }
-};
-// Get all users (admin management)
-exports.getAllUsersForAdmin = async (req, res) => {
-  try {
-    const User = require('../model/User');
-    const users = await User.find().select('-password');
-    res.status(200).json({
-      message: 'Users fetched successfully',
-      count: users.length,
-      users
-    });
-  } catch (error) {
-    console.error('Get all users error:', error);
-    res.status(500).json({ message: 'Server error', error: error.message });
-  }
-};
-
-// Delete user (admin only)
-exports.deleteUser = async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const User = require('../model/User');
-    
-    const user = await User.findByIdAndDelete(userId);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    res.status(200).json({
-      message: 'User deleted successfully',
-      deletedUser: {
-        id: user._id,
-        name: user.name,
-        email: user.email
-      }
-    });
-  } catch (error) {
-    console.error('Delete user error:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };

@@ -3,13 +3,14 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 
+
 // Import routes
-const userRoutes = require('./routes/userRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const contactRoutes = require('./routes/contactRoutes');
 const courseRoutes = require('./routes/courseRoutes');
 const workRoutes = require('./routes/workRoutes');
 const serviceRoutes = require('./routes/serviceRoutes');
+const chatbotRoutes = require('./routes/chatbotRoutes');
 
 // Import controllers for initialization
 const { initializePredefinedAdmins } = require('./controller/adminController');
@@ -49,7 +50,8 @@ const connectDB = async () => {
 connectDB();
 
 // Routes
-app.use('/api/users', userRoutes);
+
+app.use('/api/chatbot', chatbotRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/courses', courseRoutes);

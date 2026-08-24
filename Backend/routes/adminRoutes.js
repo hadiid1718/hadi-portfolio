@@ -10,7 +10,5 @@ router.post('/login', adminController.adminLogin);
 router.get('/dashboard', verifyAdminToken, adminController.getAdminDashboard);
 router.get('/all', verifyAdminToken, adminController.getAllAdmins);
 router.post('/create', verifyAdminToken, adminController.createAdmin);
-router.get('/users', verifyAdminToken, adminController.getAllUsersForAdmin);
-router.delete('/users/:userId', verifyAdminToken, adminController.deleteUser);
 
 module.exports = router;

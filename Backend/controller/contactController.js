@@ -1,4 +1,5 @@
 const Contact = require('../model/Contact');
+const { sendMail } = require('../config/mailer');
 
 // Create a new contact message
 exports.createContact = async (req, res) => {
@@ -147,23 +148,46 @@ exports.getContactStats = async (req, res) => {
   }
 };
 // Send reply to a contact message (admin only)
+// The admin composes To / Subject / Body in the dashboard; this endpoint
+// actually delivers the email (via Nodemailer) directly to that user,
+// then logs the reply on the contact record for history.
 exports.sendReply = async (req, res) => {
   try {
     const contactId = req.params.id;
-    const { message, adminName, adminEmail } = req.body;
+    const { to, subject, message, adminName, adminEmail } = req.body;
 
     // Validation
     if (!contactId || !message) {
       return res.status(400).json({ message: 'Contact ID and message are required' });
     }
 
-    // Find contact and add reply
+    // Find contact
     const contact = await Contact.findById(contactId);
     if (!contact) {
       return res.status(404).json({ message: 'Contact not found' });
     }
 
-    // Add reply to replies array
+    const recipient = to || contact.email;
+    const emailSubject = subject || `Re: ${contact.subject}`;
+
+    if (!recipient) {
+      return res.status(400).json({ message: 'No recipient email available' });
+    }
+
+    // Actually send the email to the user
+    try {
+      await sendMail({
+        to: recipient,
+        subject: emailSubject,
+        text: message,
+        replyTo: adminEmail
+      });
+    } catch (mailError) {
+      console.error('Send reply - email delivery failed:', mailError.message);
+      return res.status(502).json({ message: `Failed to send email: ${mailError.message}` });
+    }
+
+    // Log the reply on the contact record
     contact.replies.push({
       adminName: adminName || 'Admin',
       adminEmail: adminEmail,
