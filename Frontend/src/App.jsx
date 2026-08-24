@@ -7,15 +7,9 @@ import { ServicesPage } from './pages/ServicePage';
 import { WorkPage } from './pages/WorkPAge';
 import { ContactPage } from './pages/Contact';
 import { ResumePage } from './pages/ResumePage';
-import CoursePage from './pages/CoursePage';
-import Phishing from './components/courses/Topics/Phishing';
-import AndroidHacking from './components/courses/Topics/AndroidHacking';
-import Osint from './components/courses/Topics/Osint';
-import { UserLogin } from './pages/UserLogin';
-import { UserRegister } from './pages/UserRegister';
 import { AdminLogin } from './pages/AdminLogin';
-import  UserDashboard  from '../src/pages/UserDashboard';
 import { AdminDashboard } from './pages/AdminDashboard';
+import { ChatbotWidget } from './components/common/ChatbotWidget'
 
 export default function App() {
   const [currentPath, setCurrentPath] = useState(window.location.hash);
@@ -28,7 +22,8 @@ export default function App() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  const isAuthPage = currentPath.includes('#/login') || currentPath.includes('#/register') || currentPath.includes('#/admin-login');
+  const isAuthPage = currentPath.includes('#/haira.347-admin-login');
+  const isAdminPage = isAuthPage || currentPath.includes('#/admin-dashboard');
 
   return (
     <div className="bg-slate-950 text-white">
@@ -40,10 +35,11 @@ export default function App() {
         <Route path="/contact"><ContactPage /></Route>
         <Route path="/resume"><ResumePage /></Route>
         <Route path="/haira.347-admin-login"><AdminLogin /></Route>
-        <Route path="/user-dashboard"><UserDashboard /></Route>
         <Route path="/admin-dashboard"><AdminDashboard /></Route>
       </Router>
       {!isAuthPage && <Footer />}
+      {/* Chatbot is available to visitors on every public page, hidden on admin pages */}
+      {!isAdminPage && <ChatbotWidget />}
     </div>
   );
 }

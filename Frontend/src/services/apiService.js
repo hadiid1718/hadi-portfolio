@@ -34,36 +34,6 @@ const apiCall = async (endpoint, method = 'GET', body = null, token = null) => {
   }
 };
 
-// User API endpoints
-export const userAPI = {
-  register: (userData) => 
-    apiCall('/users/register', 'POST', userData),
-  
-  login: (credentials) => 
-    apiCall('/users/login', 'POST', credentials),
-  
-  getProfile: (token) => 
-    apiCall('/users/profile', 'GET', null, token),
-  
-  updateProfile: (updateData, token) => 
-    apiCall('/users/profile', 'PUT', updateData, token),
-  
-  getDashboard: (token) => 
-    apiCall('/users/dashboard', 'GET', null, token),
-  
-  getMessages: (token) => 
-    apiCall('/users/messages', 'GET', null, token),
-  
-  getSettings: (token) => 
-    apiCall('/users/settings', 'GET', null, token),
-  
-  updateSettings: (settingsData, token) => 
-    apiCall('/users/settings', 'PUT', settingsData, token),
-  
-  getAllUsers: () => 
-    apiCall('/users/all', 'GET'),
-};
-
 // Admin API endpoints
 export const adminAPI = {
   login: (credentials) => 
@@ -77,12 +47,6 @@ export const adminAPI = {
   
   createAdmin: (adminData, token) => 
     apiCall('/admin/create', 'POST', adminData, token),
-  
-  getAllUsers: (token) => 
-    apiCall('/admin/users', 'GET', null, token),
-  
-  deleteUser: (userId, token) => 
-    apiCall(`/admin/users/${userId}`, 'DELETE', null, token),
 };
 
 // Contact API endpoints
@@ -102,6 +66,7 @@ export const contactAPI = {
   updateStatus: (id, status, token) => 
     apiCall(`/contact/${id}/status`, 'PUT', { status }, token),
   
+  // replyData: { to, subject, message, adminName, adminEmail } - actually delivers an email to `to`
   sendReply: (id, replyData, token) => 
     apiCall(`/contact/${id}/reply`, 'PUT', replyData, token),
   
@@ -187,22 +152,18 @@ export const serviceAPI = {
     apiCall(`/services/${id}`, 'DELETE', null, token),
 };
 
+// Chatbot API endpoints
+export const chatbotAPI = {
+  // history: [{ role: 'user' | 'bot', text }]
+  chat: (message, history = []) =>
+    apiCall('/chatbot/chat', 'POST', { message, history }),
+};
+
 // Local storage utilities
 export const tokenStorage = {
-  setUserToken: (token) => localStorage.setItem('userToken', token),
-  getUserToken: () => localStorage.getItem('userToken'),
-  removeUserToken: () => localStorage.removeItem('userToken'),
-  
   setAdminToken: (token) => localStorage.setItem('adminToken', token),
   getAdminToken: () => localStorage.getItem('adminToken'),
   removeAdminToken: () => localStorage.removeItem('adminToken'),
-  
-  setUserData: (data) => localStorage.setItem('userData', JSON.stringify(data)),
-  getUserData: () => {
-    const data = localStorage.getItem('userData');
-    return data ? JSON.parse(data) : null;
-  },
-  removeUserData: () => localStorage.removeItem('userData'),
   
   setAdminData: (data) => localStorage.setItem('adminData', JSON.stringify(data)),
   getAdminData: () => {
@@ -213,11 +174,11 @@ export const tokenStorage = {
 };
 
 export default {
-  userAPI,
   adminAPI,
   contactAPI,
   courseAPI,
   workAPI,
   serviceAPI,
+  chatbotAPI,
   tokenStorage,
 };

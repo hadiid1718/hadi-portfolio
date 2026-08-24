@@ -1,28 +1,71 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, LogOut, Settings, BarChart3, Users, Mail, BookOpen, LogIn, LogOut as LogOutIcon, Briefcase, Plus, Trash2, Edit2, Zap } from 'lucide-react';
-import { adminAPI, contactAPI, courseAPI, workAPI, serviceAPI, tokenStorage } from '../services/apiService';
+import {
+  Menu,
+  X,
+  Settings,
+  BarChart3,
+  Mail,
+  BookOpen,
+  LogIn,
+  LogOut as LogOutIcon,
+  Briefcase,
+  Plus,
+  Trash2,
+  Edit2,
+  Zap,
+  Send
+} from 'lucide-react';
+
+import {
+  adminAPI,
+  contactAPI,
+  courseAPI,
+  workAPI,
+  serviceAPI,
+  tokenStorage
+} from '../services/apiService';
 
 export const AdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
-  const [adminData, setAdminData] = useState(tokenStorage.getAdminData());
+
+  // Admin data
+  const [adminData, setAdminData] = useState(
+    tokenStorage.getAdminData()
+  );
+
+  // Loading state
+  const [loading, setLoading] = useState(false);
+
+  // Current date and time
+  const [currentDateTime, setCurrentDateTime] = useState(new Date());
+
+  // Contacts
   const [contacts, setContacts] = useState([]);
+  const [selectedContact, setSelectedContact] = useState(null);
+
+  // Courses
   const [courses, setCourses] = useState([]);
+
+  // Dashboard stats
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalContacts: 0,
+    newContacts: 0,
     totalCourses: 0
   });
-  const [loading, setLoading] = useState(false);
-  const [currentDateTime, setCurrentDateTime] = useState(new Date());
-  const [users, setUsers] = useState([]);
-  const [deleteMessage, setDeleteMessage] = useState('');
-  const [selectedContact, setSelectedContact] = useState(null);
+
+  // Reply
+  const [replyTo, setReplyTo] = useState('');
+  const [replySubject, setReplySubject] = useState('');
   const [replyMessage, setReplyMessage] = useState('');
   const [replyLoading, setReplyLoading] = useState(false);
+
+  // Works
   const [works, setWorks] = useState([]);
   const [showAddWorkForm, setShowAddWorkForm] = useState(false);
   const [editingWork, setEditingWork] = useState(null);
+
   const [workFormData, setWorkFormData] = useState({
     title: '',
     description: '',
@@ -36,10 +79,14 @@ export const AdminDashboard = () => {
     gradient: 'from-blue-500 to-purple-600',
     featured: false
   });
+
   const [workLoading, setWorkLoading] = useState(false);
+
+  // Services
   const [services, setServices] = useState([]);
   const [showAddServiceForm, setShowAddServiceForm] = useState(false);
   const [editingService, setEditingService] = useState(null);
+
   const [serviceFormData, setServiceFormData] = useState({
     title: '',
     description: '',
@@ -48,7 +95,10 @@ export const AdminDashboard = () => {
     icon: '',
     order: 0
   });
+
   const [serviceLoading, setServiceLoading] = useState(false);
+
+  // Admin token
   const token = tokenStorage.getAdminToken();
 
   // Update date/time every second
@@ -56,6 +106,7 @@ export const AdminDashboard = () => {
     const timer = setInterval(() => {
       setCurrentDateTime(new Date());
     }, 1000);
+
     return () => clearInterval(timer);
   }, []);
 
@@ -64,14 +115,13 @@ export const AdminDashboard = () => {
       window.location.hash = '#/admin-login';
       return;
     }
+
     loadDashboardData();
   }, [token]);
 
   useEffect(() => {
     if (activeTab === 'contacts') {
       loadContacts();
-    } else if (activeTab === 'users') {
-      loadUsers();
     } else if (activeTab === 'works') {
       loadWorks();
     } else if (activeTab === 'services') {
@@ -79,13 +129,15 @@ export const AdminDashboard = () => {
     }
   }, [activeTab]);
 
+  // ... keep the rest of your existing code unchanged
+
   const loadDashboardData = async () => {
     try {
       setLoading(true);
-      
+
       // Get admin dashboard with stats
       const dashboardRes = await adminAPI.getDashboard(token);
-      
+
       if (dashboardRes.dashboard?.admin) {
         setAdminData(dashboardRes.dashboard.admin);
         tokenStorage.setAdminData(dashboardRes.dashboard.admin);
@@ -94,7 +146,7 @@ export const AdminDashboard = () => {
       if (dashboardRes.dashboard?.stats) {
         setStats(dashboardRes.dashboard.stats);
       }
-      
+
       // Get courses
       const coursesRes = await courseAPI.getAll();
       setCourses(coursesRes.courses || []);
@@ -124,17 +176,7 @@ export const AdminDashboard = () => {
     }
   };
 
-  const loadUsers = async () => {
-    try {
-      setLoading(true);
-      const usersRes = await adminAPI.getAllUsers(token);
-      setUsers(usersRes.users || []);
-    } catch (error) {
-      console.error('Error loading users:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+
 
   const loadWorks = async () => {
     try {
@@ -161,7 +203,7 @@ export const AdminDashboard = () => {
     e.preventDefault();
     try {
       setWorkLoading(true);
-      
+
       const workData = {
         ...workFormData,
         technologies: workFormData.technologies.split(',').map(t => t.trim()).filter(t => t),
@@ -243,7 +285,7 @@ export const AdminDashboard = () => {
   const handleContactStatusChange = async (contactId, newStatus) => {
     try {
       await contactAPI.updateStatus(contactId, newStatus, token);
-      setContacts(contacts.map(c => 
+      setContacts(contacts.map(c =>
         c._id === contactId ? { ...c, status: newStatus } : c
       ));
     } catch (error) {
@@ -260,35 +302,40 @@ export const AdminDashboard = () => {
     }
   };
 
+  const openContact = (contact) => {
+    setSelectedContact(contact);
+    setReplyTo(contact.email || '');
+    setReplySubject(contact.subject ? `Re: ${contact.subject}` : '');
+    setReplyMessage('');
+  };
+
   const handleSendReply = async (contactId) => {
-    if (!replyMessage.trim() || !adminData) return;
+    if (!replyMessage.trim() || !replyTo.trim() || !adminData) return;
 
     try {
       setReplyLoading(true);
       const replyData = {
+        to: replyTo,
+        subject: replySubject,
         message: replyMessage,
         adminName: adminData.name,
         adminEmail: adminData.email,
       };
-      
+
       await contactAPI.sendReply(contactId, replyData, token);
-      
-      // Update the selected contact with the new reply
+
       const updatedContact = await contactAPI.getDetails(contactId, token);
       setSelectedContact(updatedContact.contact);
-      
-      // Also update the contacts list
-      setContacts(contacts.map(c => 
+
+      setContacts(contacts.map(c =>
         c._id === contactId ? updatedContact.contact : c
       ));
-      
+
       setReplyMessage('');
-      
-      // Show success message
-      alert('Reply sent successfully!');
+      alert('Email sent successfully!');
     } catch (error) {
       console.error('Error sending reply:', error);
-      alert('Error sending reply. Please try again.');
+      alert(error.message || 'Error sending email. Please try again.');
     } finally {
       setReplyLoading(false);
     }
@@ -319,7 +366,7 @@ export const AdminDashboard = () => {
     e.preventDefault();
     try {
       setServiceLoading(true);
-      
+
       const serviceData = {
         ...serviceFormData,
         features: serviceFormData.features.split('\n').map(f => f.trim()).filter(f => f),
@@ -389,19 +436,17 @@ export const AdminDashboard = () => {
     { icon: Briefcase, label: 'Works', id: 'works' },
     { icon: Zap, label: 'Services', id: 'services' },
     { icon: BookOpen, label: 'Courses', id: 'courses' },
-    { icon: Users, label: 'Users', id: 'users' },
     { icon: Settings, label: 'Settings', id: 'settings' },
   ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 pt-20 flex">
       {/* Sidebar */}
-      <div className={`fixed lg:relative top-20 lg:top-0 w-64 h-[calc(100vh-5rem)] lg:h-full bg-slate-900/50 border-r border-slate-800 transform transition-transform duration-300 lg:translate-x-0 ${
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      } z-40`}>
+      <div className={`fixed lg:relative top-20 lg:top-0 w-64 h-[calc(100vh-5rem)] lg:h-full bg-slate-900/50 border-r border-slate-800 transform transition-transform duration-300 lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        } z-40`}>
         <div className="p-6">
           <h2 className="text-2xl font-bold text-white mb-8">Admin Panel</h2>
-          
+
           {/* Admin Info Card */}
           <div className="bg-slate-800/50 rounded-lg p-4 mb-8 border border-slate-700">
             <div className="flex items-center gap-3 mb-3">
@@ -425,11 +470,10 @@ export const AdminDashboard = () => {
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-                  activeTab === item.id
-                    ? 'bg-red-500/20 text-red-400 border border-red-500/50'
-                    : 'text-slate-300 hover:bg-slate-800/50 hover:text-red-400'
-                }`}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${activeTab === item.id
+                  ? 'bg-red-500/20 text-red-400 border border-red-500/50'
+                  : 'text-slate-300 hover:bg-slate-800/50 hover:text-red-400'
+                  }`}
               >
                 <item.icon size={20} />
                 <span>{item.label}</span>
@@ -478,15 +522,8 @@ export const AdminDashboard = () => {
           {activeTab === 'overview' && (
             <div className="space-y-6">
               {/* Stats Cards */}
-              <div className="grid md:grid-cols-4 gap-6">
-                <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-6">
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="text-slate-400 text-sm">Total Users</p>
-                    <Users size={24} className="text-blue-400" />
-                  </div>
-                  <p className="text-3xl font-bold text-white">-</p>
-                </div>
 
+              <div className="grid md:grid-cols-3 gap-6">
                 <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-6">
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-slate-400 text-sm">Total Contacts</p>
@@ -494,7 +531,6 @@ export const AdminDashboard = () => {
                   </div>
                   <p className="text-3xl font-bold text-white">{stats.totalContacts}</p>
                 </div>
-
                 <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-6">
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-slate-400 text-sm">New Messages</p>
@@ -502,7 +538,6 @@ export const AdminDashboard = () => {
                   </div>
                   <p className="text-3xl font-bold text-white">{stats.newContacts}</p>
                 </div>
-
                 <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-6">
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-slate-400 text-sm">Total Courses</p>
@@ -511,7 +546,6 @@ export const AdminDashboard = () => {
                   <p className="text-3xl font-bold text-white">{stats.totalCourses}</p>
                 </div>
               </div>
-
               {/* Quick Stats Chart */}
               <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-6">
                 <h3 className="text-xl font-bold text-white mb-4">Dashboard Summary</h3>
@@ -554,7 +588,7 @@ export const AdminDashboard = () => {
                   </button>
                 )}
               </div>
-              
+
               {selectedContact ? (
                 <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-6">
                   <div className="flex items-center justify-between mb-6">
@@ -562,6 +596,8 @@ export const AdminDashboard = () => {
                     <button
                       onClick={() => {
                         setSelectedContact(null);
+                        setReplyTo('');
+                        setReplySubject('');
                         setReplyMessage('');
                       }}
                       className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded transition-all"
@@ -607,21 +643,50 @@ export const AdminDashboard = () => {
                   )}
 
                   {/* Reply Form */}
+                  {/* Reply via Email — To / Subject / Body compose, sends a real email on submit */}
                   <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
-                    <label className="block text-white font-semibold mb-3">Send Reply</label>
+                    <label className="block text-white font-semibold mb-3 flex items-center gap-2">
+                      <Send size={18} className="text-blue-400" />
+                      Reply via Email
+                    </label>
+
+                    <div className="grid sm:grid-cols-2 gap-3 mb-3">
+                      <div>
+                        <label className="block text-slate-400 text-xs mb-1">To</label>
+                        <input
+                          type="email"
+                          value={replyTo}
+                          onChange={(e) => setReplyTo(e.target.value)}
+                          placeholder="recipient@example.com"
+                          className="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-slate-400 text-xs mb-1">Subject</label>
+                        <input
+                          type="text"
+                          value={replySubject}
+                          onChange={(e) => setReplySubject(e.target.value)}
+                          placeholder="Re: subject"
+                          className="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                        />
+                      </div>
+                    </div>
+
+                    <label className="block text-slate-400 text-xs mb-1">Body</label>
                     <textarea
                       value={replyMessage}
                       onChange={(e) => setReplyMessage(e.target.value)}
                       placeholder="Type your reply message..."
-                      rows="4"
+                      rows="5"
                       className="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 mb-3"
                     />
                     <button
                       onClick={() => handleSendReply(selectedContact._id)}
-                      disabled={replyLoading || !replyMessage.trim()}
-                      className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-white rounded transition-all font-semibold"
+                      disabled={replyLoading || !replyMessage.trim() || !replyTo.trim()}
+                      className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-white rounded transition-all font-semibold inline-flex items-center gap-2"
                     >
-                      {replyLoading ? 'Sending...' : 'Send Reply'}
+                      {replyLoading ? 'Sending...' : (<><Send size={16} /> Send Email</>)}
                     </button>
                   </div>
                 </div>
@@ -643,11 +708,10 @@ export const AdminDashboard = () => {
                               <p className="text-slate-400 text-sm">{contact.subject}</p>
                             </div>
                             <div className="flex items-center gap-3">
-                              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                                contact.status === 'new' ? 'bg-blue-500/20 text-blue-400' :
+                              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${contact.status === 'new' ? 'bg-blue-500/20 text-blue-400' :
                                 contact.status === 'read' ? 'bg-yellow-500/20 text-yellow-400' :
-                                'bg-green-500/20 text-green-400'
-                              }`}>
+                                  'bg-green-500/20 text-green-400'
+                                }`}>
                                 {contact.status.toUpperCase()}
                               </span>
                               {contact.replies && contact.replies.length > 0 && (
@@ -686,7 +750,7 @@ export const AdminDashboard = () => {
           {activeTab === 'courses' && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-white">Courses</h2>
-              
+
               {loading ? (
                 <div className="text-center py-12">
                   <p className="text-slate-400">Loading courses...</p>
@@ -697,7 +761,7 @@ export const AdminDashboard = () => {
                     <div key={course._id} className="bg-slate-900/50 border border-slate-800 rounded-lg p-6">
                       <h3 className="text-lg font-bold text-white mb-2">{course.title}</h3>
                       <p className="text-slate-400 text-sm mb-3">{course.description.substring(0, 100)}...</p>
-                      
+
                       <div className="space-y-2 text-sm mb-4">
                         <p><span className="text-slate-400">Category:</span> <span className="text-white">{course.category}</span></p>
                         <p><span className="text-slate-400">Instructor:</span> <span className="text-white">{course.instructor}</span></p>
@@ -1177,76 +1241,6 @@ export const AdminDashboard = () => {
             </div>
           )}
 
-          {/* Users Tab */}
-          {activeTab === 'users' && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-white">User Management</h2>
-              
-              {deleteMessage && (
-                <div className="p-4 bg-green-500/10 border border-green-500/50 rounded-lg text-green-400 flex items-center justify-between">
-                  <span>{deleteMessage}</span>
-                  <button onClick={() => setDeleteMessage('')}>
-                    <X size={20} />
-                  </button>
-                </div>
-              )}
-              
-              {loading ? (
-                <div className="text-center py-12">
-                  <p className="text-slate-400">Loading users...</p>
-                </div>
-              ) : users.length > 0 ? (
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-slate-800">
-                        <th className="text-left py-3 px-4 text-slate-400">Name</th>
-                        <th className="text-left py-3 px-4 text-slate-400">Email</th>
-                        <th className="text-left py-3 px-4 text-slate-400">Phone</th>
-                        <th className="text-left py-3 px-4 text-slate-400">Joined Date</th>
-                        <th className="text-left py-3 px-4 text-slate-400">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {users.map((user) => (
-                        <tr key={user._id} className="border-b border-slate-800 hover:bg-slate-800/30 transition">
-                          <td className="py-3 px-4 text-white">{user.name}</td>
-                          <td className="py-3 px-4 text-slate-300">{user.email}</td>
-                          <td className="py-3 px-4 text-slate-300">{user.phone}</td>
-                          <td className="py-3 px-4 text-slate-400">
-                            {new Date(user.createdAt).toLocaleDateString()}
-                          </td>
-                          <td className="py-3 px-4">
-                            <button
-                              onClick={async () => {
-                                if (window.confirm(`Delete user ${user.name}?`)) {
-                                  try {
-                                    await adminAPI.deleteUser(user._id, token);
-                                    setUsers(users.filter(u => u._id !== user._id));
-                                    setDeleteMessage(`User ${user.name} deleted successfully`);
-                                    setTimeout(() => setDeleteMessage(''), 3000);
-                                  } catch (error) {
-                                    console.error('Error deleting user:', error);
-                                  }
-                                }
-                              }}
-                              className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm rounded transition"
-                            >
-                              Delete
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <p className="text-slate-400">No users found</p>
-                </div>
-              )}
-            </div>
-          )}
 
           {/* Settings Tab */}
           {activeTab === 'settings' && (

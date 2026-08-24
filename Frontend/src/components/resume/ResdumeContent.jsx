@@ -13,10 +13,7 @@ const ResumeContent = ({ activeTab }) => {
           </h2>
 
           <p className="text-gray-300 leading-relaxed text-sm sm:text-base max-w-3xl mb-8">
-            Full	Stack	Developer	specializing	in	the	MERN	stack	(MongoDB,	Express.js,	React.js,	Node.js) and FastAPI	with	hands-on	experience	designing	secure	REST
-            APIs,	automating	backend	workflows,	and	delivering	production	ready	web	platforms.	Skilled	in	authentication	systems,	role	based	access	control,
-            payment	integrations,	and	cloud	deployment,	with	a	track	record	of	building	and	shipping	complete	systems	across	startup,	freelance,	and	contract
-            engagements.
+            Full stack Engineer Specializing in agentic AI systems - designing multi-agent architecture with LangGraph and crewAI, and building production RAG pipeline that stays grounded in real data instead of hallucinating , Founder of Stackmind three-agent engineering intelligence platform
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 w-full">
@@ -59,6 +56,10 @@ const ResumeContent = ({ activeTab }) => {
             <span className="bg-gray-700 px-2 py-1 sm:px-3 rounded-md text-center text-xs sm:text-sm break-words">Socket.io</span>
             <span className="bg-gray-700 px-2 py-1 sm:px-3 rounded-md text-center text-xs sm:text-sm break-words">SQL</span>
             <span className="bg-gray-700 px-2 py-1 sm:px-3 rounded-md text-center text-xs sm:text-sm break-words">MySQL</span>
+            <span className="bg-gray-700 px-2 py-1 sm:px-3 rounded-md text-center text-xs sm:text-sm break-words">RAG</span>
+            <span className="bg-gray-700 px-2 py-1 sm:px-3 rounded-md text-center text-xs sm:text-sm break-words">LangGraph</span>
+            <span className="bg-gray-700 px-2 py-1 sm:px-3 rounded-md text-center text-xs sm:text-sm break-words">Crew AI</span>
+            <span className="bg-gray-700 px-2 py-1 sm:px-3 rounded-md text-center text-xs sm:text-sm break-words">Agentic AI</span>
           </div>
         </div>
       )}
@@ -80,34 +81,34 @@ const ResumeContent = ({ activeTab }) => {
 
       {activeTab === 'experience' && (
 
-<div className="space-y-8">
-  <h1 className="text-xl sm:text-2xl font-semibold text-green-400">
-    Experience
-  </h1>
+        <div className="space-y-8">
+          <h1 className="text-xl sm:text-2xl font-semibold text-green-400">
+            Experience
+          </h1>
 
-  {experience.map((item) => (
-    <div key={item.id} className="space-y-3">
-      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center">
-        <div>
-          <h4 className="text-xl sm:text-2xl font-semibold">
-            {item.title}
-          </h4>
-          <p className="text-gray-400">{item.company}</p>
+          {experience.map((item) => (
+            <div key={item.id} className="space-y-3">
+              <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center">
+                <div>
+                  <h4 className="text-xl sm:text-2xl font-semibold">
+                    {item.title}
+                  </h4>
+                  <p className="text-gray-400">{item.company}</p>
+                </div>
+
+                <p className="text-sm sm:text-base text-gray-400">
+                  {item.date}
+                </p>
+              </div>
+
+              <p className="text-gray-300 leading-relaxed text-sm sm:text-base">
+                {item.description}
+              </p>
+            </div>
+          ))}
         </div>
 
-        <p className="text-sm sm:text-base text-gray-400">
-          {item.date}
-        </p>
-      </div>
 
-      <p className="text-gray-300 leading-relaxed text-sm sm:text-base">
-        {item.description}
-      </p>
-    </div>
-  ))}
-</div>
-
-        
       )}
     </section>
   );
