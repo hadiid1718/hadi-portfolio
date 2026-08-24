@@ -19,7 +19,12 @@ const { initializePredefinedAdmins } = require('./controller/adminController');
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://hadi-portfolio-tau.vercel.app",
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
