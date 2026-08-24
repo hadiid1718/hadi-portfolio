@@ -1,21 +1,28 @@
 import React, { useState, useEffect } from 'react';
 
 export const Router = ({ children }) => {
-  const [currentPath, setCurrentPath] = useState(window.location.hash.slice(1) || '/');
+  const [currentPath, setCurrentPath] = useState(
+    window.location.pathname || '/'
+  );
 
   useEffect(() => {
-    const handleHashChange = () => {
-      setCurrentPath(window.location.hash.slice(1) || '/');
+    const handlePopState = () => {
+      setCurrentPath(window.location.pathname || '/');
       window.scrollTo(0, 0);
     };
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
   }, []);
 
-  return React.Children.map(children, child => {
+  return React.Children.map(children, (child) => {
     if (child.props.path === currentPath) {
       return child;
     }
+
     return null;
   });
 };
