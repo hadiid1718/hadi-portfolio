@@ -87,7 +87,9 @@ exports.chat = async (req, res) => {
     const systemInstruction = `${SYSTEM_INSTRUCTIONS}\n\nKNOWLEDGE BASE:\n${staticKnowledge}\n\n${liveKnowledge}`;
 
     // Normalize any prior turns the frontend sent up into Gemini's chat history format.
-    const normalizedHistory = Array.isArray(history)
+    // Gemini requires the FIRST turn in history to have role 'user' — the widget's
+    // opening bot greeting would otherwise land first and break every request.
+    let normalizedHistory = Array.isArray(history)
       ? history
           .filter((h) => h && h.text && (h.role === 'user' || h.role === 'bot'))
           .slice(-12)
@@ -96,6 +98,18 @@ exports.chat = async (req, res) => {
             parts: [{ text: h.text }]
           }))
       : [];
+
+    while (normalizedHistory.length && normalizedHistory[0].role !== 'user') {
+      normalizedHistory.shift();
+    }
+
+    // The frontend includes the just-typed message as the last history entry too
+    // (it appends it before calling the API). Drop that duplicate so it isn't
+    // sent to Gemini twice — once in history, once via sendMessage() below.
+    const lastEntry = normalizedHistory[normalizedHistory.length - 1];
+    if (lastEntry && lastEntry.role === 'user' && lastEntry.parts[0]?.text === message.trim()) {
+      normalizedHistory.pop();
+    }
 
     // Google rotates Gemini model IDs frequently. Try the configured model first,
     // then fall back through a short list of known-good stable IDs so a single
