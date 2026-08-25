@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, Lock, ArrowRight, Eye, EyeOff, Shield } from 'lucide-react';
 import { Link } from '../components/common/Link';
+import { navigate } from '../components/utils/Router';
 import { adminAPI, tokenStorage } from '../services/apiService';
 
 export const AdminLogin = () => {
@@ -43,7 +44,7 @@ export const AdminLogin = () => {
       tokenStorage.setAdminData(response.admin);
       
       // Redirect to admin dashboard
-      window.location.hash = '#/admin-dashboard';
+      navigate('/admin-dashboard');
       
     } catch (err) {
       setError(err.message || 'An error occurred. Please try again.');
@@ -158,7 +159,7 @@ export const AdminLogin = () => {
           {/* Security Notice */}
           <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
             <p className="text-xs text-blue-300">
-              🔒 <span className="font-semibold">Security Notice:</span> This is a restricted admin area. Unauthorized access attempts are logged.
+               <span className="font-semibold">Security Notice:</span> This is a restricted admin area. Unauthorized access attempts are logged.
             </p>
           </div>
         </div>

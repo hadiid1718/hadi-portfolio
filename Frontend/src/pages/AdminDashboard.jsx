@@ -112,7 +112,7 @@ export const AdminDashboard = () => {
 
   useEffect(() => {
     if (!token) {
-      window.location.hash = '#/admin-login';
+      window.location.hash = '/admin-login';
       return;
     }
 

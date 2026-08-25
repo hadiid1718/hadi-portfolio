@@ -12,19 +12,18 @@ import { AdminDashboard } from './pages/AdminDashboard';
 import { ChatbotWidget } from './components/common/ChatbotWidget'
 
 export default function App() {
-  const [currentPath, setCurrentPath] = useState(window.location.hash);
+  const [currentPath, setCurrentPath] = useState(window.location.pathname);
 
-  useEffect(() => {
-    const handleHashChange = () => {
-      setCurrentPath(window.location.hash);
-    };
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
+useEffect(() => {
+  const handleLocationChange = () => {
+    setCurrentPath(window.location.pathname);
+  };
+  window.addEventListener('popstate', handleLocationChange);
+  return () => window.removeEventListener('popstate', handleLocationChange);
+}, []);
 
-  const isAuthPage = currentPath.includes('#/haira.347-admin-login');
-  const isAdminPage = isAuthPage || currentPath.includes('#/admin-dashboard');
-
+const isAuthPage = currentPath === '/haira.347-admin-login';
+const isAdminPage = isAuthPage || currentPath === '/admin-dashboard';
   return (
     <div className="bg-slate-950 text-white">
       {!isAuthPage && <Navigation />}

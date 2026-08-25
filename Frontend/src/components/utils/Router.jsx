@@ -1,28 +1,30 @@
 import React, { useState, useEffect } from 'react';
 
+// Navigates to a new path using the History API (no page reload, no #).
+// Dispatches a 'popstate' event manually so every listener (Router, App, etc.)
+// picks up the change the same way it would for browser back/forward.
+export const navigate = (path) => {
+  if (window.location.pathname === path) return;
+  window.history.pushState({}, '', path);
+  window.dispatchEvent(new PopStateEvent('popstate'));
+};
+
 export const Router = ({ children }) => {
-  const [currentPath, setCurrentPath] = useState(
-    window.location.pathname || '/'
-  );
+  const [currentPath, setCurrentPath] = useState(window.location.pathname || '/');
 
   useEffect(() => {
-    const handlePopState = () => {
+    const handleLocationChange = () => {
       setCurrentPath(window.location.pathname || '/');
       window.scrollTo(0, 0);
     };
-
-    window.addEventListener('popstate', handlePopState);
-
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
+    window.addEventListener('popstate', handleLocationChange);
+    return () => window.removeEventListener('popstate', handleLocationChange);
   }, []);
 
-  return React.Children.map(children, (child) => {
+  return React.Children.map(children, child => {
     if (child.props.path === currentPath) {
       return child;
     }
-
     return null;
   });
 };
