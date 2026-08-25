@@ -84,11 +84,7 @@ exports.chat = async (req, res) => {
     }
 
     const [staticKnowledge, liveKnowledge] = [buildStaticKnowledgeText(), await buildLiveKnowledgeText()];
-
-    const model = client.getGenerativeModel({
-      model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
-      systemInstruction: `${SYSTEM_INSTRUCTIONS}\n\nKNOWLEDGE BASE:\n${staticKnowledge}\n\n${liveKnowledge}`
-    });
+    const systemInstruction = `${SYSTEM_INSTRUCTIONS}\n\nKNOWLEDGE BASE:\n${staticKnowledge}\n\n${liveKnowledge}`;
 
     // Normalize any prior turns the frontend sent up into Gemini's chat history format.
     const normalizedHistory = Array.isArray(history)
@@ -101,13 +97,42 @@ exports.chat = async (req, res) => {
           }))
       : [];
 
-    const chatSession = model.startChat({ history: normalizedHistory });
-    const result = await chatSession.sendMessage(message);
-    const reply = result.response.text();
+    // Google rotates Gemini model IDs frequently. Try the configured model first,
+    // then fall back through a short list of known-good stable IDs so a single
+    // deprecated/unavailable model name doesn't take the whole chatbot down.
+    const candidateModels = [
+      process.env.GEMINI_MODEL,
+      'gemini-2.5-flash',
+      'gemini-2.0-flash',
+      'gemini-2.5-flash-lite'
+    ].filter(Boolean);
+
+    let reply = null;
+    let lastError = null;
+
+    for (const modelName of candidateModels) {
+      try {
+        const model = client.getGenerativeModel({ model: modelName, systemInstruction });
+        const chatSession = model.startChat({ history: normalizedHistory });
+        const result = await chatSession.sendMessage(message);
+        reply = result.response.text();
+        break; // success
+      } catch (modelError) {
+        lastError = modelError;
+        console.warn(`[chatbot] Model "${modelName}" failed: ${modelError.message}`);
+      }
+    }
+
+    if (reply === null) {
+      throw lastError || new Error('All configured Gemini models failed.');
+    }
 
     res.status(200).json({ reply });
   } catch (error) {
     console.error('Chatbot error:', error);
-    res.status(500).json({ message: 'The chatbot ran into an error. Please try again.', error: error.message });
+    res.status(500).json({
+      message: `The chatbot ran into an error: ${error.message || 'unknown error'}`,
+      error: error.message
+    });
   }
 };
