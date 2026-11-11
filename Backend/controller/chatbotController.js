@@ -68,6 +68,42 @@ Rules:
 - If someone wants to get in touch or hire Hadeed, point them to the Contact page (/#/contact).
 - Keep responses plain text (no markdown headers), chat-widget friendly.`;
 
+const normalizeHistory = (history, currentMessage) => {
+  if (!Array.isArray(history)) return [];
+
+  const turns = history
+    .filter((h) => h && typeof h.text === 'string' && h.text.trim() && (h.role === 'user' || h.role === 'bot'))
+    .map((h) => ({
+      role: h.role === 'user' ? 'user' : 'model',
+      text: h.text.trim()
+    }))
+    .slice(-12);
+
+  // Gemini history must start with a user turn, not the widget's welcome message.
+  while (turns[0]?.role === 'model') turns.shift();
+
+  // sendMessage sends the current message separately, so do not include it twice.
+  if (turns.at(-1)?.role === 'user' && turns.at(-1).text === currentMessage.trim()) {
+    turns.pop();
+  }
+
+  // Keep the history valid if a previous request failed before adding its model turn.
+  const validTurns = [];
+  for (const turn of turns) {
+    const previous = validTurns.at(-1);
+    if (previous?.role === turn.role) {
+      if (turn.role === 'user') previous.text = `${previous.text}\n${turn.text}`;
+      continue;
+    }
+    validTurns.push(turn);
+  }
+
+  return validTurns.map(({ role, text }) => ({
+    role,
+    parts: [{ text }]
+  }));
+};
+
 exports.chat = async (req, res) => {
   try {
     const { message, history } = req.body;
@@ -86,16 +122,7 @@ exports.chat = async (req, res) => {
     const [staticKnowledge, liveKnowledge] = [buildStaticKnowledgeText(), await buildLiveKnowledgeText()];
     const systemInstruction = `${SYSTEM_INSTRUCTIONS}\n\nKNOWLEDGE BASE:\n${staticKnowledge}\n\n${liveKnowledge}`;
 
-    // Normalize any prior turns the frontend sent up into Gemini's chat history format.
-    const normalizedHistory = Array.isArray(history)
-      ? history
-          .filter((h) => h && h.text && (h.role === 'user' || h.role === 'bot'))
-          .slice(-12)
-          .map((h) => ({
-            role: h.role === 'user' ? 'user' : 'model',
-            parts: [{ text: h.text }]
-          }))
-      : [];
+    const normalizedHistory = normalizeHistory(history, message);
 
     // Google rotates Gemini model IDs frequently. Try the configured model first,
     // then fall back through a short list of known-good stable IDs so a single

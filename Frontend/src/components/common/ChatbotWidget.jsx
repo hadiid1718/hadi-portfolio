@@ -33,7 +33,8 @@ export const ChatbotWidget = () => {
     setIsLoading(true);
 
     try {
-      const response = await chatbotAPI.chat(text, nextMessages);
+      // Send only completed turns; the current message is sent separately.
+      const response = await chatbotAPI.chat(text, messages);
       setMessages((prev) => [...prev, { role: 'bot', text: response.reply }]);
     } catch (err) {
       console.error('[ChatbotWidget] Error:', err);
