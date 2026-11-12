@@ -16,9 +16,9 @@ const getClient = () => {
 // what's actually published on the site (not just the static CV facts).
 const buildLiveKnowledgeText = async () => {
   const [works, services, courses] = await Promise.all([
-    Work.find().sort({ order: 1, createdAt: -1 }).limit(30),
-    Service.find().sort({ order: 1 }).limit(20),
-    Course.find().sort({ createdAt: -1 }).limit(20)
+    Work.find().sort({ order: 1, createdAt: -1 }).limit(30).lean(),
+    Service.find().sort({ order: 1, createdAt: -1 }).limit(20).lean(),
+    Course.find().sort({ createdAt: -1 }).limit(20).lean()
   ]);
 
   const worksText = works.length
@@ -71,37 +71,29 @@ Rules:
 const normalizeHistory = (history, currentMessage) => {
   if (!Array.isArray(history)) return [];
 
-  const turns = history
-    .filter((h) => h && typeof h.text === 'string' && h.text.trim() && (h.role === 'user' || h.role === 'bot'))
+  // Do not send previous assistant answers back to the model. They may have
+  // been generated before an admin changed the portfolio and would reintroduce
+  // stale content even though the live knowledge query is current.
+  const userMessages = history
+    .filter((h) => h && h.role === 'user' && typeof h.text === 'string' && h.text.trim())
     .map((h) => ({
-      role: h.role === 'user' ? 'user' : 'model',
       text: h.text.trim()
     }))
     .slice(-12);
 
-  // Gemini history must start with a user turn, not the widget's welcome message.
-  while (turns[0]?.role === 'model') turns.shift();
-
   // sendMessage sends the current message separately, so do not include it twice.
-  if (turns.at(-1)?.role === 'user' && turns.at(-1).text === currentMessage.trim()) {
-    turns.pop();
-  }
+  const currentText = currentMessage.trim();
+  const previousMessages = userMessages.filter(({ text }) => text !== currentText);
 
-  // Keep the history valid if a previous request failed before adding its model turn.
-  const validTurns = [];
-  for (const turn of turns) {
-    const previous = validTurns.at(-1);
-    if (previous?.role === turn.role) {
-      if (turn.role === 'user') previous.text = `${previous.text}\n${turn.text}`;
-      continue;
-    }
-    validTurns.push(turn);
-  }
-
-  return validTurns.map(({ role, text }) => ({
-    role,
-    parts: [{ text }]
-  }));
+  // Gemini history requires alternating roles. User-only context is merged
+  // into one turn and followed by a neutral model turn, while the current
+  // question is sent separately. The neutral turn avoids replaying stale data.
+  return previousMessages.length
+    ? [
+        { role: 'user', parts: [{ text: previousMessages.map(({ text }) => text).join('\n') }] },
+        { role: 'model', parts: [{ text: 'I will answer using the current portfolio knowledge.' }] }
+      ]
+    : [];
 };
 
 exports.chat = async (req, res) => {
@@ -120,7 +112,18 @@ exports.chat = async (req, res) => {
     }
 
     const [staticKnowledge, liveKnowledge] = [buildStaticKnowledgeText(), await buildLiveKnowledgeText()];
-    const systemInstruction = `${SYSTEM_INSTRUCTIONS}\n\nKNOWLEDGE BASE:\n${staticKnowledge}\n\n${liveKnowledge}`;
+    const systemInstruction = `${SYSTEM_INSTRUCTIONS}
+
+Source-of-truth rules:
+- The CURRENT PROJECTS / WORK, CURRENT SERVICES, and CURRENT COURSES sections are authoritative.
+- They are loaded from the database for every request and represent the currently published portfolio.
+- Never use a project, service, or course from memory, previous chat turns, or any other source.
+- If an item is absent from a current section, treat it as removed and say the information is not currently published.
+
+KNOWLEDGE BASE:
+${staticKnowledge}
+
+${liveKnowledge}`;
 
     const normalizedHistory = normalizeHistory(history, message);
 

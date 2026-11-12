@@ -121,17 +121,17 @@ exports.updateWork = async (req, res) => {
     }
 
     // Update fields
-    if (title) work.title = title;
-    if (description) work.description = description;
-    if (category) work.category = category;
-    if (technologies) work.technologies = Array.isArray(technologies) ? technologies : [technologies];
-    if (metrics) work.metrics = Array.isArray(metrics) ? metrics : [metrics];
-    if (status) work.status = status;
-    if (value) work.value = value;
-    if (hostedUrl) work.hostedUrl = hostedUrl;
-    if (hosted) work.hosted = hosted;
-    if (gradient) work.gradient = gradient;
-    if (imageUrl) work.imageUrl = imageUrl;
+    if (title !== undefined) work.title = title;
+    if (description !== undefined) work.description = description;
+    if (category !== undefined) work.category = category;
+    if (technologies !== undefined) work.technologies = Array.isArray(technologies) ? technologies : [technologies];
+    if (metrics !== undefined) work.metrics = Array.isArray(metrics) ? metrics : [metrics];
+    if (status !== undefined) work.status = status;
+    if (value !== undefined) work.value = value;
+    if (hostedUrl !== undefined) work.hostedUrl = hostedUrl;
+    if (hosted !== undefined) work.hosted = hosted;
+    if (gradient !== undefined) work.gradient = gradient;
+    if (imageUrl !== undefined) work.imageUrl = imageUrl;
     if (featured !== undefined) work.featured = featured;
     if (order !== undefined) work.order = order;
     

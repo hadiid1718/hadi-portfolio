@@ -1,7 +1,8 @@
 
 // Static knowledge about Hadeed Ul Hassan, sourced from his CV and portfolio copy.
-// This is combined at request time with live data pulled from MongoDB (Work, Service, Course)
-// so the chatbot always reflects both his fixed background and the site's current content.
+// Dynamic portfolio content is read from MongoDB at request time. Keep only
+// stable profile/resume information here so replaced portfolio entries cannot
+// remain in the chatbot knowledge base.
 
 const profile = {
   name: 'Hadeed Ul Hassan',
@@ -43,37 +44,6 @@ const experience = [
     period: 'Mar 2025 – May 2025',
     details:
       'Delivered a full-stack e-commerce platform end to end, covering product catalog, shopping cart, and checkout flows for a retail client. Managed the engagement independently as a freelance contractor, from requirements gathering through deployment.'
-  }
-];
-
-const featuredProjects = [
-  {
-    name: 'U Sleep — Job Proposal Automation Platform (Final Year Project)',
-    period: 'Feb 2026 – Jul 2026',
-    details:
-      'A MERN SaaS platform automating freelance proposal submissions through a 7-step pipeline covering job fetching, proposal generation, and automated sending, integrated with the Freelancer.com API (Upwork integration planned). Validated end-to-end with 2 test user accounts, fetching 20+ live jobs, auto-generating proposals for all listings, and auto-sending 10+ proposals per user. Implemented Stripe subscription billing and centralized Express error-handling middleware mapping Mongoose errors to consistent JSON responses with structured Winston logging.',
-    tech: ['Node.js', 'Express', 'MongoDB', 'React', 'Vite', 'Tailwind CSS', 'Stripe', 'Upstash']
-  },
-  {
-    name: 'Zenora — LMS Platform',
-    period: 'Jan 2026 – Feb 2026',
-    details:
-      'A full-stack LMS supporting 3 role-based access levels (admin, instructor, student), covering course creation, enrollment, cart, payments, and usage analytics. Designed enrollment logic enabling students to hold up to 3 active courses concurrently before purchasing more, with Stripe-integrated checkout.',
-    tech: ['React', 'Node.js', 'Express.js', 'MongoDB', 'Redis', 'Stripe', 'Cloudinary', 'JWT']
-  },
-  {
-    name: 'Acquisitions — Secure REST API',
-    period: 'Dec 2025',
-    details:
-      'Architected 4 role-based REST endpoints with JWT authentication and access control, rate-limited to 150 requests per minute, returning consistent 4xx/5xx JSON responses. Implemented request validation with Zod, bot and attack protection with Arcjet, structured logging with Winston; passed all 8 Jest test cases and containerized the service with Docker.',
-    tech: ['Node.js', 'Express.js', 'PostgreSQL', 'Drizzle ORM', 'Neon', 'JWT', 'Zod', 'Arcjet', 'Docker', 'Jest']
-  },
-  {
-    name: 'Readme Generator — README Generator SaaS',
-    period: 'Oct 2025 – Nov 2025',
-    details:
-      'A full-stack README Generator SaaS enabling developers to generate polished project documentation quickly. Implemented authentication, plan-based template access, and a live Markdown preview for real-time editing. Integrated Stripe-powered plan upgrades to support premium template tiers.',
-    tech: ['React', 'TypeScript', 'Node.js', 'Express', 'MongoDB', 'Stripe']
   }
 ];
 
@@ -121,9 +91,6 @@ Agentic AI: ${skills.ai.join(', ')}
 EXPERIENCE
 ${experience.map(e => `- ${e.role} at ${e.company} (${e.period}): ${e.details}`).join('\n')}
 
-FEATURED PROJECTS
-${featuredProjects.map(p => `- ${p.name} (${p.period}) — Tech: ${p.tech.join(', ')}. ${p.details}`).join('\n')}
-
 EDUCATION
 ${education.degree}, ${education.institution} (${education.period}). Relevant coursework: ${education.coursework.join(', ')}.
 
@@ -139,7 +106,6 @@ module.exports = {
   profile,
   skills,
   experience,
-  featuredProjects,
   education,
   certifications,
   siteMap,

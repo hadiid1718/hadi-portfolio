@@ -102,10 +102,10 @@ exports.updateService = async (req, res) => {
     }
 
     // Update fields
-    if (title) service.title = title;
-    if (description) service.description = description;
-    if (features) service.features = features;
-    if (technologies) service.technologies = technologies;
+    if (title !== undefined) service.title = title;
+    if (description !== undefined) service.description = description;
+    if (features !== undefined) service.features = features;
+    if (technologies !== undefined) service.technologies = technologies;
     if (icon !== undefined) service.icon = icon;
     if (order !== undefined) service.order = order;
 
